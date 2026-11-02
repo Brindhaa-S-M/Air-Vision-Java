@@ -1,0 +1,43 @@
+{
+  "project": "AirVision AI/ML",
+  "dataset": "data\\integrated\\Royapuram_matched.csv",
+  "model_features_required": [
+    "latitude",
+    "longitude",
+    "no2",
+    "aod",
+    "temperature",
+    "humidity",
+    "wind_speed",
+    "month"
+  ],
+  "target_required": "pm25",
+  "available_or_derivable_features": [
+    {
+      "model_feature": "latitude",
+      "source_column": "station_latitude_approx",
+      "status": "AVAILABLE - CHECK PROVENANCE"
+    },
+    {
+      "model_feature": "longitude",
+      "source_column": "station_longitude_approx",
+      "status": "AVAILABLE - CHECK PROVENANCE"
+    },
+    {
+      "model_feature": "month",
+      "source_column": "date",
+      "status": "DERIVABLE"
+    }
+  ],
+  "missing_features": [
+    "no2",
+    "aod",
+    "temperature",
+    "humidity",
+    "wind_speed"
+  ],
+  "row_count": 22,
+  "all_satellite_values_demo_only": true,
+  "direct_training_ready": false,
+  "recommendation": "Do not train the existing model on this matched file. Obtain genuine, appropriately time-matched satellite data and the missing meteorological and NO2 features first."
+}

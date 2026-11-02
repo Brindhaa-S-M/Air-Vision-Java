@@ -1,0 +1,21 @@
+{
+  "model": "RandomForestRegressor",
+  "target": "pm25",
+  "features": [
+    "latitude",
+    "longitude",
+    "no2",
+    "aod",
+    "temperature",
+    "humidity",
+    "wind_speed",
+    "month"
+  ],
+  "rows_total": 300,
+  "rows_train": 225,
+  "rows_test": 75,
+  "mae": 3.4248,
+  "rmse": 4.4693,
+  "r2": 0.6199,
+  "data_notice": "Dataset is synthetic demonstration data; these metrics are not scientific evidence."
+}

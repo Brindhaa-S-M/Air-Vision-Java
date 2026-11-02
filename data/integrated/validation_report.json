@@ -1,0 +1,23 @@
+{
+  "project": "AirVision AI/ML",
+  "dataset": "data\\integrated\\Royapuram_matched.csv",
+  "validation_mode": "DEMO DATA QUALITY CHECK ONLY",
+  "rows": 22,
+  "columns": 16,
+  "missing_required_columns": [],
+  "duplicate_dates": 0,
+  "invalid_dates": 0,
+  "invalid_pm25_values": 0,
+  "non_positive_reading_counts": 0,
+  "invalid_pixel_distances": 0,
+  "dates_with_demo_only_labels": 22,
+  "all_rows_marked_demo_only": true,
+  "exact_overpass_time_matched_rows": 0,
+  "pm25_daily_mean_ug_m3": {
+    "mean": 24.457,
+    "minimum": 10.291,
+    "maximum": 38.738
+  },
+  "scientific_validation": false,
+  "note": "This checks file structure and basic data quality only. Satellite values are invented demo examples, and this report does not establish satellite-ground validity or model performance."
+}

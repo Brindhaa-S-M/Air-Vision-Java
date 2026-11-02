@@ -1,0 +1,23 @@
+data_status,date,station,station_latitude_approx,station_longitude_approx,ground_pm25_ug_m3_daily_mean,ground_readings_in_daily_mean,pixel_latitude_demo,pixel_longitude_demo,aod_055_demo_only,satellite_quality,source_product,pixel_distance_km,spatial_limit_km,temporal_method,exact_overpass_time_matched
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-09-23,"Royapuram, Chennai",13.115,80.295,30.62,5,13.115,80.295,0.42,SAMPLE_NOT_REAL,DEMO_ONLY,0.0,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-09-28,"Royapuram, Chennai",13.115,80.295,23.688,8,13.115,80.295,0.4,SAMPLE_NOT_REAL,DEMO_ONLY,0.0,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-09-29,"Royapuram, Chennai",13.115,80.295,37.686,21,13.114,80.296,0.36,SAMPLE_NOT_REAL,DEMO_ONLY,0.155,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-09-30,"Royapuram, Chennai",13.115,80.295,31.078,24,13.116,80.294,0.43,SAMPLE_NOT_REAL,DEMO_ONLY,0.155,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-01,"Royapuram, Chennai",13.115,80.295,22.894,24,13.115,80.295,0.48,SAMPLE_NOT_REAL,DEMO_ONLY,0.0,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-02,"Royapuram, Chennai",13.115,80.295,23.081,15,13.116,80.296,0.44,SAMPLE_NOT_REAL,DEMO_ONLY,0.155,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-03,"Royapuram, Chennai",13.115,80.295,34.837,24,13.114,80.295,0.39,SAMPLE_NOT_REAL,DEMO_ONLY,0.111,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-04,"Royapuram, Chennai",13.115,80.295,19.395,19,13.115,80.294,0.46,SAMPLE_NOT_REAL,DEMO_ONLY,0.108,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-05,"Royapuram, Chennai",13.115,80.295,15.812,20,13.116,80.295,0.52,SAMPLE_NOT_REAL,DEMO_ONLY,0.111,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-06,"Royapuram, Chennai",13.115,80.295,14.035,24,13.115,80.296,0.49,SAMPLE_NOT_REAL,DEMO_ONLY,0.108,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-07,"Royapuram, Chennai",13.115,80.295,10.34,21,13.114,80.294,0.41,SAMPLE_NOT_REAL,DEMO_ONLY,0.155,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-08,"Royapuram, Chennai",13.115,80.295,10.291,24,13.115,80.295,0.37,SAMPLE_NOT_REAL,DEMO_ONLY,0.0,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-09,"Royapuram, Chennai",13.115,80.295,18.816,24,13.116,80.296,0.43,SAMPLE_NOT_REAL,DEMO_ONLY,0.155,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-10,"Royapuram, Chennai",13.115,80.295,21.645,24,13.115,80.294,0.5,SAMPLE_NOT_REAL,DEMO_ONLY,0.108,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-11,"Royapuram, Chennai",13.115,80.295,30.892,24,13.114,80.295,0.46,SAMPLE_NOT_REAL,DEMO_ONLY,0.111,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-12,"Royapuram, Chennai",13.115,80.295,38.738,24,13.115,80.296,0.42,SAMPLE_NOT_REAL,DEMO_ONLY,0.108,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-13,"Royapuram, Chennai",13.115,80.295,34.679,24,13.116,80.295,0.39,SAMPLE_NOT_REAL,DEMO_ONLY,0.111,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-14,"Royapuram, Chennai",13.115,80.295,18.797,24,13.115,80.294,0.45,SAMPLE_NOT_REAL,DEMO_ONLY,0.108,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-15,"Royapuram, Chennai",13.115,80.295,22.171,24,13.114,80.296,0.48,SAMPLE_NOT_REAL,DEMO_ONLY,0.155,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-16,"Royapuram, Chennai",13.115,80.295,32.212,24,13.115,80.295,0.44,SAMPLE_NOT_REAL,DEMO_ONLY,0.0,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-17,"Royapuram, Chennai",13.115,80.295,28.879,24,13.116,80.296,0.4,SAMPLE_NOT_REAL,DEMO_ONLY,0.155,2.0,Same calendar date; daily ground mean,False
+SYNTHETIC_DEMO_NOT_REAL_SATELLITE_DATA,2026-10-18,"Royapuram, Chennai",13.115,80.295,17.477,15,13.115,80.295,0.47,SAMPLE_NOT_REAL,DEMO_ONLY,0.0,2.0,Same calendar date; daily ground mean,False

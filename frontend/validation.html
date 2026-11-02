@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <title>AirVision AI | Validation</title>
+  <style>
+    :root {
+      --bg: #0b1220; --panel: #121e30; --panel2: #17263b;
+      --line: #2a3b52; --text: #edf5ff; --muted: #a6b7cb;
+      --cyan: #67e8f9; --green: #86efac; --red: #fca5a5; --amber: #fde68a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.55 "Segoe UI", Arial, sans-serif; }
+    header { padding: 22px clamp(14px, 4vw, 42px); background: #101c2e; border-bottom: 1px solid var(--line); }
+    .header-inner { max-width: 1450px; margin: auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 18px; }
+    h1 { margin: 0; color: var(--cyan); font-size: clamp(25px, 3vw, 34px); }
+    header p { margin: 4px 0 0; color: var(--muted); }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    nav a { padding: 9px 12px; color: var(--muted); border: 1px solid transparent; border-radius: 8px; text-decoration: none; }
+    nav a:hover, nav a.active { color: var(--text); background: #20334a; border-color: #38506a; }
+    main { max-width: 1200px; margin: auto; padding: 24px clamp(12px, 3vw, 30px) 42px; }
+    .notice { padding: 14px 16px; border: 1px solid #805f28; background: #302719; color: var(--amber); border-radius: 12px; margin-bottom: 18px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+    .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; }
+    .label { color: var(--muted); font-size: 13px; }
+    .value { font-size: 26px; font-weight: 700; margin-top: 6px; }
+    h2 { font-size: 20px; margin: 26px 0 12px; }
+    ul { padding-left: 22px; }
+    li { margin: 7px 0; }
+    .good { color: var(--green); } .warn { color: var(--amber); } .bad { color: var(--red); }
+    .muted { color: var(--muted); }
+    a { color: var(--cyan); }
+    footer { max-width: 1200px; margin: auto; padding: 0 24px 30px; color: var(--muted); font-size: 13px; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>AirVision AI/ML</h1>
+      <p>Data quality checks and scientific-validation status</p>
+    </div>
+    <nav aria-label="Main navigation">
+      <a href="/">Map Dashboard</a>
+      <a href="/analytics.html">Analytics</a>
+      <a href="/validation.html" class="active">Validation</a>
+      <a href="/docs" target="_blank" rel="noreferrer">API Docs ↗</a>
+    </nav>
+  </div>
+</header>
+<main>
+  <div class="notice">
+    <strong>Important:</strong> This page reports basic data-quality checks only. The satellite examples and model-training data are synthetic demo data; this is not scientific validation of real-world satellite-ground agreement or air quality.
+  </div>
+
+  <div class="grid">
+    <section class="card"><div class="label">Rows checked</div><div class="value">22</div><div class="muted">Integrated demo dataset</div></section>
+    <section class="card"><div class="label">Columns</div><div class="value">16</div><div class="muted">In the matched CSV report</div></section>
+    <section class="card"><div class="label">Duplicate dates</div><div class="value good">0</div><div class="muted">In the current report</div></section>
+    <section class="card"><div class="label">Invalid dates / PM2.5 values</div><div class="value good">0 / 0</div><div class="muted">Basic format checks passed</div></section>
+  </div>
+
+  <h2>Data quality checks</h2>
+  <section class="card">
+    <ul>
+      <li class="good">Required columns are present in the integrated CSV.</li>
+      <li class="good">No duplicate dates were reported.</li>
+      <li class="good">No invalid dates or invalid PM2.5 values were reported.</li>
+      <li class="good">No non-positive reading counts or invalid pixel distances were reported.</li>
+      <li class="warn">All 22 rows are marked demo-only.</li>
+      <li class="warn">No rows were reported as exact satellite-overpass-time matches.</li>
+    </ul>
+  </section>
+
+  <h2>Model compatibility</h2>
+  <section class="card">
+    <p>The existing Random Forest model expects latitude, longitude, NO₂, AOD, temperature, humidity, wind speed, and month as input features.</p>
+    <p class="warn"><strong>Missing from the integrated matched file:</strong> NO₂, AOD, temperature, humidity, and wind speed.</p>
+    <p class="bad"><strong>Recommendation:</strong> Do not retrain the current model using this matched file. Obtain genuine, appropriately time-matched satellite, air-quality, and meteorological data first.</p>
+  </section>
+
+  <h2>What this means</h2>
+  <section class="card">
+    <p>The current checks show that the demo file passes several structural and basic data-quality checks. They do <strong>not</strong> establish that satellite values agree with ground measurements, nor do they prove real-world model accuracy.</p>
+    <p>Use the <a href="/analytics.html">Analytics</a> page to view the prototype's model metrics, and the <a href="/">Map Dashboard</a> to try the demo predictions.</p>
+  </section>
+</main>
+<footer>AirVision AI/ML student prototype · Validation status: demo data quality checks only, not scientific validation.</footer>
+</body>
+</html>

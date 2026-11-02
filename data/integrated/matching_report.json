@@ -1,0 +1,22 @@
+{
+  "project": "AirVision AI/ML",
+  "mode": "DEMO ONLY",
+  "real_satellite_data_used": false,
+  "ground_file": "data\\integrated\\royapuram_pm25.csv",
+  "satellite_file": "data\\satellite\\Royapuram_MAIAC_AOD.csv",
+  "ground_rows_used": 460,
+  "ground_days": 22,
+  "illustrative_satellite_rows": 26,
+  "matched_days": 22,
+  "unmatched_ground_days": 0,
+  "spatial_rule": "Nearest demo pixel within 2.0 km",
+  "temporal_rule": "Same calendar date; hourly ground readings averaged by day",
+  "limitations": [
+    "Satellite values and pixel coordinates are invented demo examples.",
+    "This is not a real satellite-ground match.",
+    "Station coordinates are approximate.",
+    "AOD is not equivalent to ground-level PM2.5.",
+    "This script does not train or alter the Random Forest model."
+  ],
+  "output_file": "data\\integrated\\Royapuram_matched.csv"
+}

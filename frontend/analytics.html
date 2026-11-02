@@ -1,0 +1,1168 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <title>AirVision AI | Analytics Dashboard</title>
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121e30;
+      --panel2: #17263b;
+      --border: #2a3b52;
+      --text: #edf5ff;
+      --muted: #a6b7cb;
+      --cyan: #67e8f9;
+      --green: #86efac;
+      --red: #fca5a5;
+      --amber: #fde68a;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.55 "Segoe UI", Arial, sans-serif;
+    }
+
+    button, input, select { font: inherit; }
+
+    header {
+      padding: 22px clamp(14px, 4vw, 42px);
+      background: #101c2e;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-inner {
+      max-width: 1450px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+    }
+
+    header h1 {
+      margin: 0;
+      color: var(--cyan);
+      font-size: clamp(25px, 3vw, 34px);
+    }
+
+    header p { margin: 4px 0 0; color: var(--muted); }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    nav a {
+      padding: 9px 12px;
+      color: var(--muted);
+      border: 1px solid transparent;
+      border-radius: 8px;
+      text-decoration: none;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--text);
+      background: #20334a;
+      border-color: #38506a;
+    }
+
+    main {
+      max-width: 1450px;
+      margin: auto;
+      padding: 22px clamp(12px, 3vw, 30px) 40px;
+    }
+
+    .notice {
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      border: 1px solid #96681c;
+      border-radius: 10px;
+      background: #352811;
+      color: #fde7a4;
+      font-size: 13px;
+    }
+
+    .section-title {
+      margin: 26px 0 5px;
+      font-size: 20px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 15px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+      margin-bottom: 18px;
+    }
+
+    .card, .panel {
+      min-width: 0;
+      background: linear-gradient(145deg, #15243a, #101b2c);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+    }
+
+    .card { padding: 17px; }
+
+    .card-label {
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .card-value {
+      margin: 7px 0 4px;
+      color: var(--cyan);
+      font-size: clamp(21px, 2.5vw, 29px);
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .card-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .panel {
+      padding: 19px;
+      margin-bottom: 18px;
+    }
+
+    .panel h2 {
+      margin: 0 0 7px;
+      font-size: 18px;
+    }
+
+    .muted { color: var(--muted); font-size: 13px; }
+
+    .status {
+      padding: 11px 13px;
+      margin-top: 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #0b1727;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .status.success { color: var(--green); }
+    .status.error { color: var(--red); }
+    .status.warning { color: var(--amber); }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+      margin-top: 17px;
+    }
+
+    .field { min-width: 0; }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #c8d7e8;
+      font-size: 13px;
+    }
+
+    .field input, .field select {
+      width: 100%;
+      min-width: 0;
+      padding: 10px;
+      border: 1px solid #3b5069;
+      border-radius: 8px;
+      background: #0b1524;
+      color: var(--text);
+    }
+
+    .field input:focus, .field select:focus {
+      outline: 2px solid #22d3ee66;
+      border-color: var(--cyan);
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: 1px solid #168ca4;
+      border-radius: 8px;
+      background: #087e99;
+      color: white;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    button:hover { background: #0b657a; }
+    button:disabled { opacity: .55; cursor: wait; }
+
+    button.secondary {
+      background: #1c2b40;
+      border-color: #40536b;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 250px;
+      margin-top: 12px;
+    }
+
+    .chart-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin: 10px 0 0;
+    }
+
+    .table-wrap { overflow-x: auto; }
+
+    table {
+      width: 100%;
+      min-width: 560px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 11px 9px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th { color: var(--cyan); }
+    tbody tr:hover { background: #17263b; }
+
+    .empty {
+      padding: 20px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .feature-row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr) 48px;
+      align-items: center;
+      gap: 10px;
+      margin: 13px 0;
+      font-size: 13px;
+    }
+
+    .feature-track {
+      height: 10px;
+      border-radius: 20px;
+      background: #263b55;
+      overflow: hidden;
+    }
+
+    .feature-fill {
+      height: 100%;
+      border-radius: 20px;
+      background: var(--cyan);
+    }
+
+    .feature-value {
+      text-align: right;
+      color: var(--muted);
+    }
+
+    .two-column {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    footer {
+      padding: 23px;
+      border-top: 1px solid var(--border);
+      color: #8295ac;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 1000px) {
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 650px) {
+      .charts-grid, .two-column { grid-template-columns: 1fr; }
+      .field-grid { grid-template-columns: 1fr; }
+      .panel, .card { padding: 14px; }
+      canvas { height: 225px; }
+      .feature-row { grid-template-columns: 85px minmax(0, 1fr) 40px; }
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <div class="header-inner">
+    <div>
+      <h1>AirVision AI</h1>
+      <p>Machine learning analytics and PM2.5 prediction</p>
+    </div>
+
+    <nav>
+      <a href="/">Map Dashboard</a>
+      <a href="/analytics.html" class="active">Analytics Dashboard</a>
+      <a href="/validation.html">Validation</a>
+      <a href="/docs" target="_blank" rel="noreferrer">API Docs ↗</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="notice">
+    <strong>Academic prototype notice:</strong>
+    This project uses synthetic demonstration data. Metrics are evaluations
+    on that dataset, not proof of real-world model accuracy. Predictions are
+    not live measurements, official AQI, health advice, or validated forecasts.
+    Charts labelled illustrative use example values rather than actual model
+    findings.
+  </div>
+
+  <h2 class="section-title">Model overview</h2>
+  <p class="section-description">
+    These details are retrieved from the existing FastAPI /api/metrics endpoint.
+  </p>
+
+  <section class="cards">
+    <article class="card">
+      <div class="card-label">Machine learning model</div>
+      <div class="card-value" id="modelName">Loading…</div>
+      <div class="card-note">Model reported by the backend</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">Dataset rows</div>
+      <div class="card-value" id="totalRows">—</div>
+      <div class="card-note">Total samples reported</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">Training rows</div>
+      <div class="card-value" id="trainRows">—</div>
+      <div class="card-note">Samples used for training</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">Test rows</div>
+      <div class="card-value" id="testRows">—</div>
+      <div class="card-note">Held-out evaluation samples</div>
+    </article>
+  </section>
+
+  <h2 class="section-title">Model evaluation</h2>
+  <p class="section-description">
+    Lower MAE and RMSE generally indicate smaller prediction errors.
+    R² describes explained variation on the reported test split.
+  </p>
+
+  <section class="cards">
+    <article class="card">
+      <div class="card-label">MAE</div>
+      <div class="card-value" id="maeValue">—</div>
+      <div class="card-note">Mean absolute error · µg/m³</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">RMSE</div>
+      <div class="card-value" id="rmseValue">—</div>
+      <div class="card-note">Root mean squared error · µg/m³</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">R² score</div>
+      <div class="card-value" id="r2Value">—</div>
+      <div class="card-note">Coefficient of determination</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">Successful predictions</div>
+      <div class="card-value" id="predictionCount">0</div>
+      <div class="card-note">This browser session</div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <h2>Evaluation summary</h2>
+    <p class="muted" id="metricsSummary">
+      Waiting for evaluation metrics.
+    </p>
+    <p class="muted" id="featureSummary">
+      Model feature information will appear here.
+    </p>
+    <div class="status" id="metricsStatus" role="status" aria-live="polite">
+      Loading /api/metrics…
+    </div>
+  </section>
+
+  <h2 class="section-title">Try a PM2.5 prediction</h2>
+  <p class="section-description">
+    Submit environmental inputs to request a prediction from the trained
+    Random Forest model through the existing API.
+  </p>
+
+  <section class="panel">
+    <form id="predictionForm">
+      <div class="field-grid">
+        <div class="field">
+          <label for="latitude">Latitude (-90 to 90)</label>
+          <input id="latitude" type="number" min="-90" max="90"
+                 step="any" value="13.08" required>
+        </div>
+
+        <div class="field">
+          <label for="longitude">Longitude (-180 to 180)</label>
+          <input id="longitude" type="number" min="-180" max="180"
+                 step="any" value="80.27" required>
+        </div>
+
+        <div class="field">
+          <label for="no2">NO₂ input</label>
+          <input id="no2" type="number" min="0" step="any"
+                 value="20" required>
+        </div>
+
+        <div class="field">
+          <label for="aod">Aerosol optical depth (AOD)</label>
+          <input id="aod" type="number" min="0" step="any"
+                 value="0.3" required>
+        </div>
+
+        <div class="field">
+          <label for="temperature">Temperature (°C)</label>
+          <input id="temperature" type="number" step="any"
+                 value="30" required>
+        </div>
+
+        <div class="field">
+          <label for="humidity">Humidity (%)</label>
+          <input id="humidity" type="number" min="0" max="100"
+                 step="any" value="65" required>
+        </div>
+
+        <div class="field">
+          <label for="wind_speed">Wind speed input</label>
+          <input id="wind_speed" type="number" min="0" step="any"
+                 value="2" required>
+        </div>
+
+        <div class="field">
+          <label for="month">Month</label>
+          <select id="month" required>
+            <option value="1">January (1)</option>
+            <option value="2">February (2)</option>
+            <option value="3">March (3)</option>
+            <option value="4">April (4)</option>
+            <option value="5">May (5)</option>
+            <option value="6">June (6)</option>
+            <option value="7">July (7)</option>
+            <option value="8">August (8)</option>
+            <option value="9">September (9)</option>
+            <option value="10">October (10)</option>
+            <option value="11">November (11)</option>
+            <option value="12">December (12)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="predictButton" type="submit">Get prediction</button>
+        <button id="clearHistoryButton" class="secondary" type="button">
+          Clear history
+        </button>
+      </div>
+
+      <div class="status" id="predictionStatus" role="status" aria-live="polite">
+        Ready to request a prediction.
+      </div>
+    </form>
+  </section>
+
+  <section class="cards">
+    <article class="card">
+      <div class="card-label">Latest predicted PM2.5</div>
+      <div class="card-value" id="predictionValue">—</div>
+      <div class="card-note" id="predictionUnit">
+        µg/m³ · awaiting prediction
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">Backend status</div>
+      <div class="card-value" id="backendStatus">Checking…</div>
+      <div class="card-note">FastAPI health endpoint</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">Latest prediction latitude</div>
+      <div class="card-value" id="lastLatitude">—</div>
+      <div class="card-note">Input coordinate</div>
+    </article>
+
+    <article class="card">
+      <div class="card-label">Latest prediction longitude</div>
+      <div class="card-value" id="lastLongitude">—</div>
+      <div class="card-note">Input coordinate</div>
+    </article>
+  </section>
+
+  <section class="panel">
+    <h2>Model notice</h2>
+    <p class="muted" id="modelNotice">
+      The prediction endpoint's notice will appear after a successful request.
+    </p>
+  </section>
+
+  <h2 class="section-title">Prediction charts</h2>
+  <p class="section-description">
+    The first chart uses predictions actually returned by the API during this
+    page session. The other charts are illustrative examples, not trained-model
+    analyses or observed pollution data.
+  </p>
+
+  <section class="charts-grid">
+    <article class="panel">
+      <h2>Recent model predictions</h2>
+      <canvas id="predictionChart" aria-label="Recent PM2.5 predictions"></canvas>
+      <p class="chart-note">
+        Actual successful API responses, retained in browser memory.
+      </p>
+    </article>
+
+    <article class="panel">
+      <h2>Illustrative pollutant comparison</h2>
+      <canvas id="pollutantChart" aria-label="Illustrative pollutant chart"></canvas>
+      <p class="chart-note">
+        Arbitrary example index values. Not concentrations or API results.
+      </p>
+    </article>
+
+    <article class="panel">
+      <h2>Illustrative hourly pattern</h2>
+      <canvas id="dailyChart" aria-label="Illustrative hourly chart"></canvas>
+      <p class="chart-note">
+        Example values only. Not a live time series or a future forecast.
+      </p>
+    </article>
+
+    <article class="panel">
+      <h2>Illustrative feature comparison</h2>
+      <canvas id="featureChart" aria-label="Illustrative feature chart"></canvas>
+      <p class="chart-note">
+        Example bars only. Not calculated feature importances from the model.
+      </p>
+    </article>
+  </section>
+
+  <h2 class="section-title">Prediction history</h2>
+  <p class="section-description">
+    The most recent 20 successful predictions are shown. Refreshing this page
+    clears the session history.
+  </p>
+
+  <section class="panel">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Request</th>
+            <th>Predicted PM2.5</th>
+            <th>Latitude</th>
+            <th>Longitude</th>
+            <th>Month</th>
+            <th>Timestamp</th>
+          </tr>
+        </thead>
+        <tbody id="predictionRows">
+          <tr>
+            <td colspan="6" class="empty">
+              No predictions yet. Submit the form above.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <h2 class="section-title">Methodology and project limitations</h2>
+
+  <section class="two-column">
+    <article class="panel">
+      <h2>Machine learning workflow</h2>
+      <p class="muted">
+        AirVision AI uses a Random Forest regression model to estimate PM2.5
+        from latitude, longitude, NO₂, aerosol optical depth, temperature,
+        humidity, wind speed, and month.
+      </p>
+      <p class="muted">
+        MAE, RMSE, and R² are loaded from the backend's evaluation metrics.
+        Training and test row counts describe the dataset split reported by
+        that backend.
+      </p>
+    </article>
+
+    <article class="panel">
+      <h2>Responsible interpretation</h2>
+      <p class="muted">
+        The supplied training data is synthetic demonstration data. Strong
+        metrics on synthetic data do not establish accuracy on actual
+        environmental measurements.
+      </p>
+      <p class="muted">
+        This application is an academic prototype, not a live air-quality
+        monitoring service, official AQI calculator, medical resource,
+        or validated forecasting system.
+      </p>
+    </article>
+  </section>
+</main>
+
+<footer>
+  AirVision AI · Academic prototype · Synthetic training data
+</footer>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+
+  // All history is temporary and exists only for this browser session.
+  const history = [];
+  let successfulPredictions = 0;
+  let metricsData = null;
+
+  function setStatus(id, message, type = "") {
+    const element = $(id);
+    element.textContent = message;
+    element.className = "status" + (type ? " " + type : "");
+  }
+
+  function fmt(value, digits = 3) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n.toFixed(digits) : "—";
+  }
+
+  async function api(path, options = {}) {
+    const response = await fetch(path, {
+      ...options,
+      headers: {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {})
+      }
+    });
+
+    const body = await response.text();
+    let data = {};
+
+    try {
+      data = body ? JSON.parse(body) : {};
+    } catch {
+      throw new Error("The server returned an unexpected response.");
+    }
+
+    if (!response.ok) {
+      const detail = typeof data.detail === "string"
+        ? data.detail
+        : "HTTP " + response.status;
+
+      throw new Error(detail);
+    }
+
+    return data;
+  }
+
+  async function checkBackend() {
+    try {
+      const data = await api("/api/health");
+      $("backendStatus").textContent =
+        data.status === "ok" ? "Connected" : "Available";
+
+      setStatus(
+        "predictionStatus",
+        "Backend connected. Ready to predict.",
+        "success"
+      );
+    } catch (error) {
+      $("backendStatus").textContent = "Unavailable";
+      setStatus(
+        "predictionStatus",
+        "Backend unavailable: " + error.message +
+        ". Check that FastAPI is running.",
+        "error"
+      );
+    }
+  }
+
+  async function loadMetrics() {
+    try {
+      const data = await api("/api/metrics");
+
+      const required = [
+        "mae", "rmse", "r2", "rows_train", "rows_test", "rows_total"
+      ];
+
+      for (const key of required) {
+        if (!Number.isFinite(Number(data[key]))) {
+          throw new Error("Invalid or missing metric: " + key);
+        }
+      }
+
+      metricsData = data;
+
+      $("modelName").textContent = data.model || "Not specified";
+      $("totalRows").textContent = Number(data.rows_total).toLocaleString();
+      $("trainRows").textContent = Number(data.rows_train).toLocaleString();
+      $("testRows").textContent = Number(data.rows_test).toLocaleString();
+
+      $("maeValue").textContent = fmt(data.mae, 4);
+      $("rmseValue").textContent = fmt(data.rmse, 4);
+      $("r2Value").textContent = fmt(data.r2, 4);
+
+      $("metricsSummary").textContent =
+        "Target: " + (data.target || "not specified") +
+        ". MAE: " + fmt(data.mae, 4) +
+        ", RMSE: " + fmt(data.rmse, 4) +
+        ", R²: " + fmt(data.r2, 4) + ".";
+
+      const features = Array.isArray(data.features)
+        ? data.features.join(", ")
+        : "Feature list not supplied by the API";
+
+      $("featureSummary").textContent =
+        "Model features: " + features + ".";
+
+      setStatus(
+        "metricsStatus",
+        data.data_notice ||
+        "Metrics loaded from the backend. Check the dataset documentation for context.",
+        "success"
+      );
+    } catch (error) {
+      $("modelName").textContent = "Unavailable";
+      $("totalRows").textContent = "—";
+      $("trainRows").textContent = "—";
+      $("testRows").textContent = "—";
+      $("maeValue").textContent = "—";
+      $("rmseValue").textContent = "—";
+      $("r2Value").textContent = "—";
+
+      $("metricsSummary").textContent =
+        "Evaluation metrics could not be retrieved.";
+
+      $("featureSummary").textContent = "";
+
+      setStatus(
+        "metricsStatus",
+        "Could not load /api/metrics: " + error.message,
+        "error"
+      );
+    }
+  }
+
+  function getInputs() {
+    return {
+      latitude: Number($("latitude").value),
+      longitude: Number($("longitude").value),
+      no2: Number($("no2").value),
+      aod: Number($("aod").value),
+      temperature: Number($("temperature").value),
+      humidity: Number($("humidity").value),
+      wind_speed: Number($("wind_speed").value),
+      month: Number($("month").value)
+    };
+  }
+
+  function validateInputs(data) {
+    for (const [key, value] of Object.entries(data)) {
+      if (!Number.isFinite(value)) {
+        return "Enter a valid number for " + key + ".";
+      }
+    }
+
+    if (data.latitude < -90 || data.latitude > 90) {
+      return "Latitude must be between -90 and 90.";
+    }
+
+    if (data.longitude < -180 || data.longitude > 180) {
+      return "Longitude must be between -180 and 180.";
+    }
+
+    if (data.no2 < 0 || data.aod < 0 || data.wind_speed < 0) {
+      return "NO₂, AOD, and wind speed cannot be negative.";
+    }
+
+    if (data.humidity < 0 || data.humidity > 100) {
+      return "Humidity must be between 0 and 100.";
+    }
+
+    if (!Number.isInteger(data.month) ||
+        data.month < 1 || data.month > 12) {
+      return "Month must be an integer between 1 and 12.";
+    }
+
+    return "";
+  }
+
+  async function requestPrediction(event) {
+    event.preventDefault();
+
+    const inputs = getInputs();
+    const validationError = validateInputs(inputs);
+
+    if (validationError) {
+      setStatus("predictionStatus", validationError, "error");
+      return;
+    }
+
+    const button = $("predictButton");
+    button.disabled = true;
+    button.textContent = "Predicting…";
+
+    setStatus(
+      "predictionStatus",
+      "Sending environmental inputs to the prediction API…"
+    );
+
+    try {
+      const result = await api("/api/predict", {
+        method: "POST",
+        body: JSON.stringify(inputs)
+      });
+
+      const predicted = Number(result.predicted_pm25);
+
+      if (!Number.isFinite(predicted)) {
+        throw new Error(
+          "The API response has no valid predicted_pm25 value."
+        );
+      }
+
+      successfulPredictions++;
+
+      const entry = {
+        request: successfulPredictions,
+        value: predicted,
+        latitude: inputs.latitude,
+        longitude: inputs.longitude,
+        month: inputs.month,
+        timestamp: new Date().toLocaleTimeString()
+      };
+
+      history.push(entry);
+
+      // Retain only the 20 most recent results.
+      if (history.length > 20) history.shift();
+
+      $("predictionCount").textContent =
+        successfulPredictions.toLocaleString();
+
+      $("predictionValue").textContent = predicted.toFixed(2);
+      $("predictionUnit").textContent =
+        (result.unit || "µg/m³") + " · model output";
+
+      $("lastLatitude").textContent = inputs.latitude.toFixed(4);
+      $("lastLongitude").textContent = inputs.longitude.toFixed(4);
+
+      $("modelNotice").textContent =
+        result.notice ||
+        "Synthetic-data model output; not a live measurement or validated forecast.";
+
+      $("backendStatus").textContent = "Connected";
+
+      fillHistory();
+      drawPredictionChart();
+
+      setStatus(
+        "predictionStatus",
+        "Prediction received successfully from " +
+        (result.model || "the backend model") + ".",
+        "success"
+      );
+    } catch (error) {
+      setStatus(
+        "predictionStatus",
+        "Prediction failed: " + error.message,
+        "error"
+      );
+    } finally {
+      button.disabled = false;
+      button.textContent = "Get prediction";
+    }
+  }
+
+  function drawChart(canvasId, labels, values, title, type = "line") {
+    const canvas = $(canvasId);
+    const context = canvas.getContext("2d");
+    const rect = canvas.getBoundingClientRect();
+    const cssWidth = Math.max(250, rect.width || 300);
+    const cssHeight = rect.height || 250;
+    const scale = Math.max(1, window.devicePixelRatio || 1);
+
+    canvas.width = Math.round(cssWidth * scale);
+    canvas.height = Math.round(cssHeight * scale);
+
+    context.setTransform(scale, 0, 0, scale, 0, 0);
+    context.clearRect(0, 0, cssWidth, cssHeight);
+
+    const width = cssWidth;
+    const height = cssHeight;
+    const left = 43;
+    const right = 12;
+    const top = 27;
+    const bottom = 37;
+    const plotWidth = width - left - right;
+    const plotHeight = height - top - bottom;
+
+    context.font = "11px Segoe UI, Arial";
+    context.fillStyle = "#edf5ff";
+    context.fillText(title, left, 15);
+
+    if (!values.length) {
+      context.fillStyle = "#a6b7cb";
+      context.fillText("No predictions yet.", left, height / 2);
+      return;
+    }
+
+    const minValue = Math.min(0, ...values);
+    const maxValue = Math.max(1, ...values) * 1.15;
+    const range = maxValue - minValue || 1;
+
+    context.strokeStyle = "#2a3b52";
+    context.fillStyle = "#a6b7cb";
+    context.lineWidth = 1;
+
+    for (let i = 0; i <= 4; i++) {
+      const y = top + plotHeight * i / 4;
+      const value = maxValue - range * i / 4;
+
+      context.beginPath();
+      context.moveTo(left, y);
+      context.lineTo(width - right, y);
+      context.stroke();
+
+      context.fillText(value.toFixed(0), 4, y + 4);
+    }
+
+    const xAt = index => left + (
+      values.length === 1
+        ? plotWidth / 2
+        : index * plotWidth / (values.length - 1)
+    );
+
+    const yAt = value =>
+      top + plotHeight - ((value - minValue) / range) * plotHeight;
+
+    if (type === "bar") {
+      const slot = plotWidth / values.length;
+
+      values.forEach((value, index) => {
+        const barHeight = Math.max(
+          0,
+          ((value - minValue) / range) * plotHeight
+        );
+
+        context.fillStyle = "#22d3ee";
+        context.fillRect(
+          left + index * slot + slot * 0.18,
+          top + plotHeight - barHeight,
+          Math.max(2, slot * 0.64),
+          barHeight
+        );
+
+        context.fillStyle = "#a6b7cb";
+        context.fillText(
+          labels[index],
+          left + index * slot,
+          height - 13
+        );
+      });
+
+      return;
+    }
+
+    context.beginPath();
+
+    values.forEach((value, index) => {
+      if (index === 0) {
+        context.moveTo(xAt(index), yAt(value));
+      } else {
+        context.lineTo(xAt(index), yAt(value));
+      }
+    });
+
+    context.strokeStyle = "#22d3ee";
+    context.lineWidth = 2.5;
+    context.stroke();
+
+    values.forEach((value, index) => {
+      context.beginPath();
+      context.arc(xAt(index), yAt(value), 3.5, 0, Math.PI * 2);
+      context.fillStyle = "#67e8f9";
+      context.fill();
+    });
+
+    const step = Math.max(1, Math.ceil(labels.length / 5));
+
+    labels.forEach((label, index) => {
+      if (index % step === 0 || index === labels.length - 1) {
+        context.fillStyle = "#a6b7cb";
+        context.fillText(
+          label,
+          Math.min(xAt(index) - 7, width - 35),
+          height - 13
+        );
+      }
+    });
+  }
+
+  function drawPredictionChart() {
+    drawChart(
+      "predictionChart",
+      history.map(item => "#" + item.request),
+      history.map(item => item.value),
+      "Predicted PM2.5 (µg/m³)"
+    );
+  }
+
+  function drawIllustrativeCharts() {
+    drawChart(
+      "pollutantChart",
+      ["PM2.5", "NO₂", "O₃", "SO₂", "CO"],
+      [72, 48, 39, 22, 31],
+      "Illustrative index (not measurements)",
+      "bar"
+    );
+
+    drawChart(
+      "dailyChart",
+      ["00h", "03h", "06h", "09h", "12h", "15h", "18h", "21h"],
+      [22, 19, 24, 35, 39, 33, 42, 30],
+      "Example hourly values"
+    );
+
+    drawChart(
+      "featureChart",
+      ["AOD", "NO₂", "Temp", "Humidity", "Wind"],
+      [78, 65, 42, 35, 24],
+      "Example values only",
+      "bar"
+    );
+  }
+
+  function fillHistory() {
+    const body = $("predictionRows");
+    body.replaceChildren();
+
+    if (!history.length) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+
+      cell.colSpan = 6;
+      cell.className = "empty";
+      cell.textContent = "No predictions yet. Submit the form above.";
+
+      row.appendChild(cell);
+      body.appendChild(row);
+      return;
+    }
+
+    history.slice().reverse().forEach(item => {
+      const row = document.createElement("tr");
+
+      const values = [
+        String(item.request),
+        item.value.toFixed(2) + " µg/m³",
+        item.latitude.toFixed(4),
+        item.longitude.toFixed(4),
+        String(item.month),
+        item.timestamp
+      ];
+
+      values.forEach(value => {
+        const cell = document.createElement("td");
+        cell.textContent = value;
+        row.appendChild(cell);
+      });
+
+      body.appendChild(row);
+    });
+  }
+
+  $("predictionForm").addEventListener("submit", requestPrediction);
+
+  $("clearHistoryButton").addEventListener("click", () => {
+    history.length = 0;
+    successfulPredictions = 0;
+
+    $("predictionCount").textContent = "0";
+    $("predictionValue").textContent = "—";
+    $("predictionUnit").textContent = "µg/m³ · no prediction yet";
+    $("lastLatitude").textContent = "—";
+    $("lastLongitude").textContent = "—";
+
+    fillHistory();
+    drawPredictionChart();
+
+    setStatus(
+      "predictionStatus",
+      "Session prediction history cleared."
+    );
+  });
+
+  let resizeFrame = null;
+
+  window.addEventListener("resize", () => {
+    if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
+
+    resizeFrame = requestAnimationFrame(() => {
+      drawPredictionChart();
+      drawIllustrativeCharts();
+      resizeFrame = null;
+    });
+  });
+
+  // Initial page setup.
+  fillHistory();
+  drawPredictionChart();
+  drawIllustrativeCharts();
+
+  Promise.allSettled([
+    checkBackend(),
+    loadMetrics()
+  ]);
+})();
+</script>
+</body>
+</html>

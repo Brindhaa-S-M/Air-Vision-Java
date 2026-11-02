@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b1220">
+  <title>AirVision AI | Air Quality Map</title>
+
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  >
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+
+  <style>
+    :root {
+      --bg: #0b1220;
+      --panel: #121e30;
+      --panel2: #17263b;
+      --line: #2a3b52;
+      --text: #edf5ff;
+      --muted: #a6b7cb;
+      --cyan: #67e8f9;
+      --green: #86efac;
+      --red: #fca5a5;
+      --amber: #fde68a;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.5 "Segoe UI", Arial, sans-serif;
+    }
+
+    a {
+      color: var(--cyan);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 10px 13px;
+      border: 1px solid #168ca4;
+      border-radius: 8px;
+      background: #087e99;
+      color: white;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #0b657a;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+
+    .secondary {
+      background: #1c2b40;
+      border-color: #40536b;
+    }
+
+    .wrap {
+      max-width: 1600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 20px;
+      background: #101c2e;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .brand h1 {
+      margin: 0;
+      color: var(--cyan);
+      font-size: clamp(24px, 3vw, 34px);
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      color: var(--muted);
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      padding: 9px 12px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      color: var(--muted);
+    }
+
+    nav a.active,
+    nav a:hover {
+      color: var(--text);
+      background: #20334a;
+      border-color: #38506a;
+      text-decoration: none;
+    }
+
+    .notice {
+      margin: 18px 0;
+      padding: 14px 16px;
+      border: 1px solid #96681c;
+      background: #352811;
+      color: #fde7a4;
+      border-radius: 10px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 13px;
+      margin-bottom: 18px;
+    }
+
+    .metric,
+    .panel {
+      min-width: 0;
+      background: linear-gradient(145deg, #15243a, #101b2c);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+    }
+
+    .metric {
+      padding: 16px;
+    }
+
+    .metric .label {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .metric .value {
+      margin: 6px 0;
+      color: var(--cyan);
+      font-size: clamp(20px, 2.4vw, 29px);
+      font-weight: 750;
+      overflow-wrap: anywhere;
+    }
+
+    .metric small {
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 330px minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .sidebar {
+      display: grid;
+      gap: 14px;
+    }
+
+    .panel {
+      padding: 17px;
+    }
+
+    .panel h2 {
+      margin: 0 0 12px;
+      font-size: 17px;
+    }
+
+    .panel h3 {
+      margin: 16px 0 8px;
+      color: #d9e8f8;
+      font-size: 14px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 5px;
+      color: #c1d1e3;
+      font-size: 12px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-width: 0;
+      padding: 9px;
+      border: 1px solid #3b5069;
+      border-radius: 8px;
+      background: #0b1524;
+      color: var(--text);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: 2px solid #22d3ee66;
+      border-color: var(--cyan);
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 13px;
+    }
+
+    .button-row button {
+      flex: 1;
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .status.success {
+      color: var(--green);
+    }
+
+    .status.error {
+      color: var(--red);
+    }
+
+    .status.warn {
+      color: var(--amber);
+    }
+
+    .map-panel {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .map-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 15px 17px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .map-head h2 {
+      margin: 0;
+    }
+
+    .map-actions {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .map-actions button {
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+
+    #map {
+      height: min(70vh, 760px);
+      min-height: 430px;
+      background: #dbeafe;
+    }
+
+    .map-footer {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 13px 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .map-stats {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .map-stats b {
+      color: var(--cyan);
+    }
+
+    .legend {
+      min-width: 190px;
+    }
+
+    .gradient {
+      height: 10px;
+      margin: 7px 0;
+      border-radius: 99px;
+      background: linear-gradient(
+        90deg,
+        #22c55e,
+        #eab308,
+        #f97316,
+        #dc2626
+      );
+    }
+
+    .legend-labels {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .layer-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .layer-list label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #dce8f5;
+      font-size: 13px;
+    }
+
+    .layer-list input {
+      accent-color: #22d3ee;
+    }
+
+    .result {
+      min-height: 65px;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #2c415a;
+      border-radius: 10px;
+      background: #0b1727;
+      overflow-wrap: anywhere;
+    }
+
+    .result .big {
+      color: var(--cyan);
+      font-size: 27px;
+      font-weight: 750;
+    }
+
+    .result p {
+      margin: 4px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 13px;
+      margin-top: 16px;
+    }
+
+    .method-grid .panel {
+      box-shadow: none;
+    }
+
+    .method-grid p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background: #101d2e;
+      color: #edf5ff;
+    }
+
+    .leaflet-popup-content {
+      margin: 12px;
+      line-height: 1.5;
+    }
+
+    .popup-title {
+      color: #67e8f9;
+      font-weight: 700;
+    }
+
+    .popup-muted {
+      color: #b8c8da;
+      font-size: 12px;
+    }
+
+    .footer {
+      padding: 22px 10px;
+      color: #8295ac;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 1050px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .sidebar .wide {
+        grid-column: 1 / -1;
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      #map {
+        height: 58vh;
+      }
+    }
+
+    @media (max-width: 650px) {
+      .wrap {
+        padding: 10px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 16px;
+      }
+
+      .sidebar {
+        grid-template-columns: 1fr;
+      }
+
+      .metric-grid {
+        gap: 8px;
+      }
+
+      .metric {
+        padding: 12px;
+      }
+
+      .panel {
+        padding: 13px;
+      }
+
+      .map-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      #map {
+        min-height: 380px;
+        height: 55vh;
+      }
+
+      .method-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field-grid {
+        gap: 9px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <header class="topbar">
+    <div class="brand">
+      <h1>AirVision AI</h1>
+      <p>Machine-learning air-quality exploration prototype</p>
+    </div>
+
+    <nav aria-label="Main navigation">
+      <a class="active" href="/">Map Dashboard</a>
+      <a href="/analytics.html">Analytics</a>
+      <a href="/validation.html">Validation</a>
+      <a href="/docs" target="_blank" rel="noreferrer">API Docs ↗</a>
+    </nav>
+  </header>
+
+  <div class="notice">
+    <strong>Academic prototype:</strong>
+    the model uses synthetic demonstration data. Map colors are model-generated
+    estimates for demonstration, not live measurements, official AQI, health
+    advice, or validated forecasts. The basemap provides geographic context only.
+  </div>
+
+  <section class="metric-grid" aria-label="Model summary">
+    <div class="metric">
+      <div class="label">Model</div>
+      <div class="value" id="modelMetric">Loading…</div>
+      <small>Reported by backend</small>
+    </div>
+
+    <div class="metric">
+      <div class="label">Training rows</div>
+      <div class="value" id="trainMetric">—</div>
+      <small id="datasetMetric">Dataset size unavailable</small>
+    </div>
+
+    <div class="metric">
+      <div class="label">MAE</div>
+      <div class="value" id="maeMetric">—</div>
+      <small>Test-set error · µg/m³</small>
+    </div>
+
+    <div class="metric">
+      <div class="label">RMSE / R²</div>
+      <div class="value" id="rmseMetric">—</div>
+      <small id="r2Metric">Evaluation loading…</small>
+    </div>
+  </section>
+
+  <div class="layout">
+    <aside class="sidebar">
+
+      <section class="panel">
+        <h2>Prediction environment</h2>
+        <p class="muted">
+          Set model inputs used for the grid and point predictions.
+        </p>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="no2">NO₂ (input)</label>
+            <input id="no2" type="number" min="0" step="any" value="20">
+          </div>
+
+          <div class="field">
+            <label for="aod">AOD (input)</label>
+            <input id="aod" type="number" min="0" step="any" value="0.3">
+          </div>
+
+          <div class="field">
+            <label for="temperature">Temperature °C</label>
+            <input id="temperature" type="number" step="any" value="30">
+          </div>
+
+          <div class="field">
+            <label for="humidity">Humidity %</label>
+            <input id="humidity" type="number" min="0" max="100" step="any" value="65">
+          </div>
+
+          <div class="field">
+            <label for="wind_speed">Wind speed</label>
+            <input id="wind_speed" type="number" min="0" step="any" value="2">
+          </div>
+
+          <div class="field">
+            <label for="month">Month</label>
+            <select id="month">
+              <option value="1">January</option>
+              <option value="2">February</option>
+              <option value="3">March</option>
+              <option value="4">April</option>
+              <option value="5">May</option>
+              <option value="6">June</option>
+              <option value="7">July</option>
+              <option value="8">August</option>
+              <option value="9">September</option>
+              <option value="10">October</option>
+              <option value="11">November</option>
+              <option value="12">December</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>Prediction area</h3>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="south">South latitude</label>
+            <input id="south" type="number" step="any" value="12.85">
+          </div>
+
+          <div class="field">
+            <label for="north">North latitude</label>
+            <input id="north" type="number" step="any" value="13.25">
+          </div>
+
+          <div class="field">
+            <label for="west">West longitude</label>
+            <input id="west" type="number" step="any" value="80.05">
+          </div>
+
+          <div class="field">
+            <label for="east">East longitude</label>
+            <input id="east" type="number" step="any" value="80.40">
+          </div>
+
+          <div class="field full">
+            <label for="resolution">Grid resolution</label>
+            <select id="resolution">
+              <option value="6">Fast · 6 × 6</option>
+              <option value="8" selected>Balanced · 8 × 8</option>
+              <option value="12">Detailed · 12 × 12</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="generateButton">Generate heatmap</button>
+          <button class="secondary" id="resetButton">Reset</button>
+        </div>
+
+        <div class="status" id="gridStatus" role="status" aria-live="polite">
+          Preparing map…
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Single-location prediction</h2>
+        <p class="muted">
+          Click anywhere on the map to fill coordinates, or enter them below.
+        </p>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="latitude">Latitude</label>
+            <input id="latitude" type="number" min="-90" max="90"
+                   step="any" value="13.08">
+          </div>
+
+          <div class="field">
+            <label for="longitude">Longitude</label>
+            <input id="longitude" type="number" min="-180" max="180"
+                   step="any" value="80.27">
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="predictButton">Predict this location</button>
+        </div>
+
+        <div class="status" id="predictStatus" role="status" aria-live="polite">
+          Choose a location and request a prediction.
+        </div>
+
+        <div class="result" id="predictionResult">
+          <div class="muted">Model-predicted PM2.5</div>
+          <p>No prediction requested yet.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Map layers</h2>
+
+        <div class="layer-list">
+          <label>
+            <input type="checkbox" id="streetLayer" checked>
+            Street map
+          </label>
+
+          <label>
+            <input type="checkbox" id="satelliteLayer">
+            Satellite imagery
+          </label>
+
+          <label>
+            <input type="checkbox" id="heatLayerToggle" checked>
+            PM2.5 prediction heatmap
+          </label>
+
+          <label>
+            <input type="checkbox" id="stationLayerToggle" checked>
+            Monitoring stations
+          </label>
+
+          <label>
+            <input type="checkbox" id="pointLayerToggle" checked>
+            Selected-location prediction
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button class="secondary" id="refreshButton">Refresh data</button>
+          <button class="secondary" id="fitButton">Fit prediction area</button>
+        </div>
+      </section>
+    </aside>
+
+    <section class="panel map-panel">
+      <div class="map-head">
+        <div>
+          <h2>Air quality prediction map</h2>
+          <div class="muted">
+            Spatial model estimates · demonstration dataset
+          </div>
+        </div>
+
+        <div class="map-actions">
+          <button class="secondary" id="zoomChennaiButton">
+            View Chennai
+          </button>
+        </div>
+      </div>
+
+      <div id="map" aria-label="Interactive air quality prediction map"></div>
+
+      <div class="map-footer">
+        <div class="map-stats">
+          <div>Grid points: <b id="gridCount">—</b></div>
+          <div>Minimum: <b id="gridMin">—</b></div>
+          <div>Maximum: <b id="gridMax">—</b></div>
+          <div>Stations: <b id="stationCount">—</b></div>
+        </div>
+
+        <div class="legend">
+          <strong>Relative heatmap intensity</strong>
+          <div class="gradient"></div>
+          <div class="legend-labels">
+            <span>Lower</span>
+            <span>Moderate</span>
+            <span>Higher</span>
+          </div>
+          <div class="muted">
+            Colors are normalized for visualization. Numeric minimum and
+            maximum show the returned model values.
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="method-grid">
+    <article class="panel">
+      <h2>Model methodology</h2>
+      <p>
+        A Random Forest regression model estimates PM2.5 using geographic
+        coordinates, NO₂, aerosol optical depth, temperature, humidity,
+        wind speed, and month.
+      </p>
+    </article>
+
+    <article class="panel">
+      <h2>Evaluation</h2>
+      <p>
+        MAE and RMSE summarize prediction errors, while R² describes
+        explained variation on the reported evaluation split.
+        These metrics are based on synthetic demonstration data.
+      </p>
+    </article>
+
+    <article class="panel">
+      <h2>Limitations</h2>
+      <p>
+        This academic prototype does not provide live monitoring,
+        official AQI, health guidance, or validated future forecasts.
+        Results should not be used for real-world decisions.
+      </p>
+    </article>
+  </section>
+
+  <footer class="footer">
+    AirVision AI · Academic prototype · Synthetic training data ·
+    <span id="mapFooterStatus">Initializing…</span>
+  </footer>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const API_BASE = "";
+
+  const state = {
+    stations: [],
+    grid: [],
+    heat: null,
+    pointMarker: null,
+    gridBounds: null
+  };
+
+  function setStatus(id, message, type = "") {
+    const element = $(id);
+    element.textContent = message;
+    element.className = "status" + (type ? " " + type : "");
+  }
+
+  function fmt(value, digits = 2) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toFixed(digits) : "—";
+  }
+
+  function esc(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[char]);
+  }
+
+  async function api(path, options = {}) {
+    const response = await fetch(API_BASE + path, {
+      ...options,
+      headers: {
+        Accept: "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {})
+      }
+    });
+
+    const text = await response.text();
+    let data = {};
+
+    try {
+      data = text ? JSON.parse(text) : {};
+    } catch {
+      throw new Error("The server returned an unreadable response.");
+    }
+
+    if (!response.ok) {
+      const detail = typeof data.detail === "string"
+        ? data.detail
+        : "Request failed (HTTP " + response.status + ").";
+
+      throw new Error(detail);
+    }
+
+    return data;
+  }
+
+  function envInputs() {
+    return {
+      no2: Number($("no2").value),
+      aod: Number($("aod").value),
+      temperature: Number($("temperature").value),
+      humidity: Number($("humidity").value),
+      wind_speed: Number($("wind_speed").value),
+      month: Number($("month").value)
+    };
+  }
+
+  function validEnv() {
+    const values = envInputs();
+
+    if (!Object.values(values).every(Number.isFinite)) {
+      throw new Error("Enter valid numbers for all environmental inputs.");
+    }
+
+    if (values.no2 < 0 || values.aod < 0 || values.wind_speed < 0) {
+      throw new Error("NO₂, AOD, and wind speed must be non-negative.");
+    }
+
+    if (values.humidity < 0 || values.humidity > 100) {
+      throw new Error("Humidity must be between 0 and 100.");
+    }
+
+    if (
+      !Number.isInteger(values.month) ||
+      values.month < 1 ||
+      values.month > 12
+    ) {
+      throw new Error("Month must be between 1 and 12.");
+    }
+
+    return values;
+  }
+
+  function getBounds() {
+    const bounds = {
+      south: Number($("south").value),
+      north: Number($("north").value),
+      west: Number($("west").value),
+      east: Number($("east").value),
+      resolution: Number($("resolution").value)
+    };
+
+    if (!Object.values(bounds).every(Number.isFinite)) {
+      throw new Error("Enter valid map bounds.");
+    }
+
+    if (
+      bounds.south < -90 ||
+      bounds.north > 90 ||
+      bounds.south >= bounds.north ||
+      bounds.west < -180 ||
+      bounds.east > 180 ||
+      bounds.west >= bounds.east
+    ) {
+      throw new Error(
+        "Bounds must be ordered and within valid latitude/longitude ranges."
+      );
+    }
+
+    if (![6, 8, 12].includes(bounds.resolution)) {
+      throw new Error("Choose a supported grid resolution.");
+    }
+
+    return bounds;
+  }
+
+  async function loadMetrics() {
+    try {
+      const data = await api("/api/metrics");
+
+      $("modelMetric").textContent = data.model || "Not specified";
+      $("trainMetric").textContent =
+        Number.isFinite(Number(data.rows_train))
+          ? Number(data.rows_train).toLocaleString()
+          : "—";
+
+      $("datasetMetric").textContent =
+        "Total rows: " +
+        (
+          Number.isFinite(Number(data.rows_total))
+            ? Number(data.rows_total).toLocaleString()
+            : "—"
+        );
+
+      $("maeMetric").textContent = fmt(data.mae, 3);
+      $("rmseMetric").textContent = fmt(data.rmse, 3);
+      $("r2Metric").textContent = "R²: " + fmt(data.r2, 3);
+
+      $("mapFooterStatus").textContent = "Model metrics loaded";
+    } catch (error) {
+      $("modelMetric").textContent = "Unavailable";
+      $("maeMetric").textContent = "—";
+      $("rmseMetric").textContent = "—";
+      $("r2Metric").textContent = "Metrics unavailable";
+      $("mapFooterStatus").textContent =
+        "Metrics error: " + error.message;
+    }
+  }
+
+  function normalizeStations(data) {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data.stations)) return data.stations;
+
+    if (
+      data.type === "FeatureCollection" &&
+      Array.isArray(data.features)
+    ) {
+      return data.features.map(feature => ({
+        ...feature.properties,
+        latitude: feature.geometry?.coordinates?.[1],
+        longitude: feature.geometry?.coordinates?.[0]
+      }));
+    }
+
+    return [];
+  }
+
+  function stationPopup(station, index) {
+    const name =
+      station.name ||
+      station.station_name ||
+      station.id ||
+      ("Demo station " + (index + 1));
+
+    const fields = [
+      ["NO₂", station.no2],
+      ["AOD", station.aod],
+      [
+        "Temperature",
+        station.temperature == null
+          ? null
+          : station.temperature + " °C"
+      ],
+      [
+        "Humidity",
+        station.humidity == null
+          ? null
+          : station.humidity + "%"
+      ],
+      ["Wind speed", station.wind_speed],
+      ["Month", station.month],
+      [
+        "Simulated PM2.5",
+        station.pm25 ?? station.pm25_value ?? station.predicted_pm25
+      ]
+    ];
+
+    const details = fields
+      .filter(([, value]) =>
+        value !== undefined && value !== null && value !== ""
+      )
+      .map(([label, value]) =>
+        "<div>" + esc(label) + ": <b>" + esc(value) + "</b></div>"
+      )
+      .join("");
+
+    return (
+      '<div class="popup-title">' + esc(name) + "</div>" +
+      '<div class="popup-muted">Demonstration station data</div>' +
+      details +
+      '<div class="popup-muted">Not a live observation.</div>'
+    );
+  }
+
+  async function loadStations() {
+    try {
+      const data = await api("/api/stations");
+      state.stations = normalizeStations(data);
+      state.stationGroup.clearLayers();
+
+      let count = 0;
+
+      state.stations.forEach((station, index) => {
+        const latitude = Number(
+          station.latitude ??
+          station.lat ??
+          station.geometry?.coordinates?.[1]
+        );
+
+        const longitude = Number(
+          station.longitude ??
+          station.lon ??
+          station.lng ??
+          station.geometry?.coordinates?.[0]
+        );
+
+        if (
+          !Number.isFinite(latitude) ||
+          !Number.isFinite(longitude) ||
+          Math.abs(latitude) > 90 ||
+          Math.abs(longitude) > 180
+        ) {
+          return;
+        }
+
+        L.circleMarker([latitude, longitude], {
+          radius: 6,
+          color: "#071522",
+          weight: 1.5,
+          fillColor: "#67e8f9",
+          fillOpacity: 0.95
+        })
+          .bindPopup(stationPopup(station, index))
+          .addTo(state.stationGroup);
+
+        count++;
+      });
+
+      $("stationCount").textContent = String(count);
+
+      if (!count) {
+        setStatus(
+          "gridStatus",
+          "The stations endpoint returned no mappable station coordinates.",
+          "warn"
+        );
+      }
+    } catch (error) {
+      $("stationCount").textContent = "—";
+      setStatus(
+        "gridStatus",
+        "Could not load stations: " + error.message,
+        "error"
+      );
+    }
+  }
+
+  function heatValues(rows) {
+    return rows.map(row => {
+      const latitude = Number(row.latitude ?? row.lat);
+      const longitude = Number(row.longitude ?? row.lon ?? row.lng);
+      const value = Number(
+        row.predicted_pm25 ??
+        row.pm25 ??
+        row.prediction ??
+        row.value
+      );
+
+      return [latitude, longitude, value];
+    }).filter(point =>
+      point.every(Number.isFinite) &&
+      Math.abs(point[0]) <= 90 &&
+      Math.abs(point[1]) <= 180
+    );
+  }
+
+  async function generateGrid() {
+    const button = $("generateButton");
+    button.disabled = true;
+
+    setStatus("gridStatus", "Requesting prediction grid…");
+
+    try {
+      const bounds = getBounds();
+      const environment = validEnv();
+
+      state.gridBounds = bounds;
+
+      const query = new URLSearchParams({
+        south: bounds.south,
+        north: bounds.north,
+        west: bounds.west,
+        east: bounds.east,
+        resolution: bounds.resolution,
+        ...Object.fromEntries(
+          Object.entries(environment).map(([key, value]) => [
+            key,
+            String(value)
+          ])
+        )
+      });
+
+      const data = await api(
+        "/api/prediction-grid?" + query.toString()
+      );
+
+      const rows = Array.isArray(data)
+        ? data
+        : data.predictions || data.grid || data.points || data.data || [];
+
+      if (!Array.isArray(rows)) {
+        throw new Error(
+          "The prediction-grid response has an unexpected format."
+        );
+      }
+
+      state.grid = heatValues(rows);
+
+      if (!state.grid.length) {
+        throw new Error(
+          "No valid grid coordinates or predictions were returned."
+        );
+      }
+
+      if (state.heat) {
+        map.removeLayer(state.heat);
+      }
+
+      const values = state.grid.map(point => point[2]);
+      const minimum = Math.min(...values);
+      const maximum = Math.max(...values);
+
+      const intensity = point =>
+  Math.max(0, Math.min(1, (point[2] - 10) / 50));
+
+      state.heat = L.heatLayer(
+        state.grid.map(point => [
+          point[0],
+          point[1],
+          intensity(point)
+        ]),
+        {
+          radius: 30,
+          blur: 22,
+          maxZoom: 15,
+          minOpacity: 0.25,
+          gradient: {
+            0.15: "#22c55e",
+            0.42: "#eab308",
+            0.68: "#f97316",
+            1: "#dc2626"
+          }
+        }
+      );
+
+      if ($("heatLayerToggle").checked) {
+        state.heat.addTo(map);
+      }
+
+      $("gridCount").textContent = String(state.grid.length);
+      $("gridMin").textContent = fmt(minimum) + " µg/m³";
+      $("gridMax").textContent = fmt(maximum) + " µg/m³";
+
+      map.fitBounds(
+        [[bounds.south, bounds.west], [bounds.north, bounds.east]],
+        { padding: [12, 12] }
+      );
+
+      setStatus(
+        "gridStatus",
+        "Grid generated: " + state.grid.length + " model estimates.",
+        "success"
+      );
+
+      $("mapFooterStatus").textContent =
+        "Grid generated · synthetic-data demonstration";
+    } catch (error) {
+      setStatus(
+        "gridStatus",
+        "Could not generate grid: " + error.message,
+        "error"
+      );
+
+      $("mapFooterStatus").textContent = "Grid generation failed";
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  async function predictPoint() {
+    const button = $("predictButton");
+    button.disabled = true;
+
+    setStatus("predictStatus", "Requesting model prediction…");
+
+    try {
+      const latitude = Number($("latitude").value);
+      const longitude = Number($("longitude").value);
+
+      if (
+        !Number.isFinite(latitude) ||
+        latitude < -90 ||
+        latitude > 90 ||
+        !Number.isFinite(longitude) ||
+        longitude < -180 ||
+        longitude > 180
+      ) {
+        throw new Error("Enter valid latitude and longitude.");
+      }
+
+      const payload = {
+        latitude,
+        longitude,
+        ...validEnv()
+      };
+
+      const data = await api("/api/predict", {
+        method: "POST",
+        body: JSON.stringify(payload)
+      });
+
+      const value = Number(data.predicted_pm25);
+
+      if (!Number.isFinite(value)) {
+        throw new Error(
+          "The API did not return a valid predicted_pm25 value."
+        );
+      }
+
+      state.pointGroup.clearLayers();
+
+      state.pointMarker = L.circleMarker([latitude, longitude], {
+        radius: 9,
+        color: "#ffffff",
+        weight: 2,
+        fillColor: "#a78bfa",
+        fillOpacity: 1
+      })
+        .bindPopup(
+          '<div class="popup-title">Selected-location prediction</div>' +
+          "<div><b>" + fmt(value) + " " +
+          esc(data.unit || "µg/m³") + "</b></div>" +
+          '<div class="popup-muted">Model output · not a measurement</div>'
+        )
+        .addTo(state.pointGroup);
+
+      state.pointMarker.openPopup();
+
+      if (!$("pointLayerToggle").checked) {
+        map.removeLayer(state.pointGroup);
+      } else if (!map.hasLayer(state.pointGroup)) {
+        state.pointGroup.addTo(map);
+      }
+
+      $("predictionResult").innerHTML =
+        '<div class="muted">Model-predicted PM2.5</div>' +
+        '<div class="big">' + fmt(value) +
+        ' <span style="font-size:14px">' +
+        esc(data.unit || "µg/m³") + "</span></div>" +
+        "<p>Location: " + latitude.toFixed(4) + ", " +
+        longitude.toFixed(4) + "</p>" +
+        "<p>Model: " + esc(data.model || "Random Forest API") + "</p>" +
+        "<p>" + esc(
+          data.notice ||
+          "Synthetic-data demonstration; not a live measurement."
+        ) + "</p>";
+
+      setStatus(
+        "predictStatus",
+        "Prediction received successfully.",
+        "success"
+      );
+
+      map.setView(
+        [latitude, longitude],
+        Math.max(map.getZoom(), 12)
+      );
+    } catch (error) {
+      setStatus(
+        "predictStatus",
+        "Prediction failed: " + error.message,
+        "error"
+      );
+    } finally {
+      button.disabled = false;
+    }
+  }
+
+  function toggleLayer(inputId, layer) {
+    if (!layer) return;
+
+    if ($(inputId).checked) {
+      if (!map.hasLayer(layer)) {
+        layer.addTo(map);
+      }
+    } else if (map.hasLayer(layer)) {
+      map.removeLayer(layer);
+    }
+  }
+
+  function reset() {
+    const defaults = [
+      ["no2", "20"],
+      ["aod", "0.3"],
+      ["temperature", "30"],
+      ["humidity", "65"],
+      ["wind_speed", "2"],
+      ["month", "1"],
+      ["south", "12.85"],
+      ["north", "13.25"],
+      ["west", "80.05"],
+      ["east", "80.40"],
+      ["resolution", "8"],
+      ["latitude", "13.08"],
+      ["longitude", "80.27"]
+    ];
+
+    defaults.forEach(([id, value]) => {
+      $(id).value = value;
+    });
+
+    $("streetLayer").checked = true;
+    $("satelliteLayer").checked = false;
+    $("heatLayerToggle").checked = true;
+    $("stationLayerToggle").checked = true;
+    $("pointLayerToggle").checked = true;
+
+    toggleLayer("streetLayer", street);
+    toggleLayer("satelliteLayer", satellite);
+    toggleLayer("heatLayerToggle", state.heat);
+    toggleLayer("stationLayerToggle", state.stationGroup);
+    toggleLayer("pointLayerToggle", state.pointGroup);
+
+    map.setView([13.08, 80.27], 11);
+    generateGrid();
+  }
+
+  const street = L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+      maxZoom: 19,
+      attribution: "&copy; OpenStreetMap contributors"
+    }
+  );
+
+  const satellite = L.tileLayer(
+    "https://server.arcgisonline.com/ArcGIS/rest/services/" +
+    "World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {
+      maxZoom: 19,
+      attribution: "Tiles &copy; Esri"
+    }
+  );
+
+  const map = L.map("map", {
+    center: [13.08, 80.27],
+    zoom: 11,
+    layers: [street]
+  });
+
+  state.stationGroup = L.layerGroup().addTo(map);
+  state.pointGroup = L.layerGroup().addTo(map);
+
+  L.control.scale({ imperial: false }).addTo(map);
+
+  $("generateButton").addEventListener("click", generateGrid);
+  $("predictButton").addEventListener("click", predictPoint);
+  $("resetButton").addEventListener("click", reset);
+
+  $("refreshButton").addEventListener("click", async () => {
+    await Promise.all([loadMetrics(), loadStations()]);
+    await generateGrid();
+  });
+
+  $("fitButton").addEventListener("click", () => {
+    try {
+      const bounds = getBounds();
+
+      map.fitBounds(
+        [[bounds.south, bounds.west], [bounds.north, bounds.east]],
+        { padding: [12, 12] }
+      );
+    } catch (error) {
+      setStatus("gridStatus", error.message, "error");
+    }
+  });
+
+  $("zoomChennaiButton").addEventListener("click", () => {
+    map.setView([13.08, 80.27], 11);
+  });
+
+  $("streetLayer").addEventListener("change", () => {
+    if ($("streetLayer").checked) {
+      map.addLayer(street);
+      $("satelliteLayer").checked = false;
+      map.removeLayer(satellite);
+    } else {
+      map.removeLayer(street);
+    }
+  });
+
+  $("satelliteLayer").addEventListener("change", () => {
+    if ($("satelliteLayer").checked) {
+      map.addLayer(satellite);
+      $("streetLayer").checked = false;
+      map.removeLayer(street);
+    } else {
+      map.removeLayer(satellite);
+      if (!$("streetLayer").checked) {
+        $("streetLayer").checked = true;
+        map.addLayer(street);
+      }
+    }
+  });
+
+  $("heatLayerToggle").addEventListener("change", () => {
+    toggleLayer("heatLayerToggle", state.heat);
+  });
+
+  $("stationLayerToggle").addEventListener("change", () => {
+    toggleLayer("stationLayerToggle", state.stationGroup);
+  });
+
+  $("pointLayerToggle").addEventListener("change", () => {
+    toggleLayer("pointLayerToggle", state.pointGroup);
+  });
+
+  map.on("click", event => {
+    $("latitude").value = event.latlng.lat.toFixed(5);
+    $("longitude").value = event.latlng.lng.toFixed(5);
+
+    setStatus(
+      "predictStatus",
+      "Map location selected. Click “Predict this location” to request an estimate."
+    );
+  });
+
+  (async () => {
+    await Promise.all([loadMetrics(), loadStations()]);
+    await generateGrid();
+  })();
+})();
+</script>
+</body>
+</html>
